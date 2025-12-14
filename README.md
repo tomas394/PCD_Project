@@ -1,109 +1,228 @@
-Este projeto é uma implementação de um jogo de perguntas e respostas multijogador (semelhante ao Kahoot) desenvolvido em Java. O sistema utiliza uma arquitetura Cliente-Servidor e foca-se no uso de programação concorrente (Threads, Sincronização, Locks, Barreiras e Latches) para gerir múltiplos jogos e jogadores em simultâneo.
+# 🧠 IsKahoot – Jogo de Trivia Distribuído
 
-📋 Pré-requisitos
-Java JDK 8 ou superior instalado.
+O **IsKahoot** é um jogo de perguntas e respostas multijogador inspirado no Kahoot  
+desenvolvido em **Java**  
+com arquitetura **Cliente Servidor**  
+e um forte foco em **programação concorrente**
 
-Terminal/Linha de comandos.
+Aqui há Threads a correr  
+Locks a fechar  
+Barreiras a sincronizar  
+e Latches a contar até zero  
+tudo para manter vários jogos e jogadores a funcionar ao mesmo tempo  
+sem o servidor entrar em pânico
 
-🛠️ Como Compilar
-Antes de executar, é necessário compilar todos os ficheiros .java para gerar as classes (.class).
+---
+
+## 📋 Pré requisitos
+
+- Java JDK 8 ou superior instalado  
+- Terminal ou linha de comandos  
+
+---
+
+## 🛠️ Como Compilar
+
+Antes de executar o sistema é necessário compilar todos os ficheiros `.java`  
+para gerar os ficheiros `.class`
 
 Abra o terminal na pasta raiz do projeto e execute:
 
-Bash
-
+```bash
 javac *.java
-🚀 Como Executar
-O sistema funciona em duas partes: primeiro inicia-se o Servidor, cria-se um jogo, e depois iniciam-se os Clientes.
 
-1. Iniciar o Servidor
-Certifique-se de que o ficheiro questions.json está na mesma pasta.
 
-Execute o servidor:
+1️⃣ Iniciar o Servidor
 
-Bash
+Certifique se de que o ficheiro questions.json está na mesma pasta do servidor
+
+Execute o servidor com:
 
 java KahootServer
-O servidor ficará à espera de comandos. Para criar um novo jogo, use o comando new com a seguinte sintaxe: new <num_equipas> <jogadores_por_equipa> <num_perguntas>
 
-Exemplo (cria um jogo para 2 equipas, 2 pessoas cada, 5 perguntas):
 
-Plaintext
+O servidor ficará à espera de comandos no terminal
+
+Para criar um novo jogo utilize o comando new com a seguinte sintaxe:
+
+new <num_equipas> <jogadores_por_equipa> <num_perguntas>
+
+Exemplo
+
+Criar um jogo com
+2 equipas
+2 jogadores por equipa
+5 perguntas
 
 new 2 2 5
-O servidor irá confirmar a criação e mostrar o Código do Jogo (ex: Game0). Anote este código, os clientes vão precisar dele.
 
-2. Iniciar os Clientes (Jogadores)
-Abra novos terminais (um para cada jogador) e execute o cliente.
 
-Sintaxe: java KahootClient <host> <porta> <codigo_jogo> <nome_equipa> <username>
+O servidor irá confirmar a criação do jogo e apresentar um Código do Jogo
+por exemplo:
 
-host: localhost (se for no mesmo PC).
+Game0
 
-porta: 8080 (porta padrão do servidor).
 
-codigo_jogo: O código gerado pelo servidor (ex: Game0).
+⚠️ Este código deve ser anotado
+os clientes precisam dele para entrar no jogo
 
-nome_equipa: A equipa onde quer entrar (ex: EquipaA).
+2️⃣ Iniciar os Clientes (Jogadores)
 
-username: O seu nome único.
+Abra um novo terminal para cada jogador
 
-Exemplo Prático:
+A sintaxe de execução do cliente é:
 
-Jogador 1 (Ana):
+java KahootClient <host> <porta> <codigo_jogo> <nome_equipa> <username>
 
-Bash
+Parâmetros
+
+host
+Endereço do servidor
+Use localhost se estiver no mesmo computador
+
+porta
+Porta do servidor
+Por defeito 8080
+
+codigo_jogo
+Código fornecido pelo servidor
+Exemplo Game0
+
+nome_equipa
+Nome da equipa onde o jogador vai entrar
+Exemplo EquipaA
+
+username
+Nome único do jogador
+
+Exemplo Prático
+
+Jogador 1 – Ana
 
 java KahootClient localhost 8080 Game0 EquipaA Ana
-Jogador 2 (João):
 
-Bash
+
+Jogador 2 – João
 
 java KahootClient localhost 8080 Game0 EquipaA Joao
+
+
+O jogo inicia automaticamente
+assim que todas as equipas estiverem completas
+sem botões
+sem contagens decrescentes dramáticas
+
 🎮 Regras e Pontuação
-O jogo inicia automaticamente quando todas as equipas estiverem cheias.
 
-Tipos de Perguntas
-O jogo alterna entre dois tipos de rondas:
+O jogo alterna entre dois tipos de rondas
+Rondas Individuais e Rondas de Equipa
 
-Rondas Individuais:
+🧍 Rondas Individuais
 
-Cada jogador joga por si, mas os pontos somam para a equipa.
+Cada jogador responde individualmente
 
-Bónus de Rapidez: Os primeiros 2 jogadores a responder corretamente ganham o dobro dos pontos.
+Os pontos obtidos somam para a pontuação da equipa
 
-Usa um CountdownLatch modificado para controlar a rapidez.
+Bónus de Rapidez
 
-Rondas de Equipa:
+Os primeiros 2 jogadores a responder corretamente
+recebem o dobro dos pontos
 
-A equipa precisa de se coordenar.
+Implementação Concorrente
 
-A pontuação só é atribuída quando todos os membros da equipa responderem.
+Utiliza um ModifiedCountdownLatch
 
-Se todos acertarem: Pontuação a dobrar para a equipa.
+Permite identificar quem responde primeiro
 
-Se apenas alguns acertarem: Pontuação normal.
+Controla o fecho da ronda quando todos respondem ou o tempo termina
 
-Usa Barreiras (Wait/NotifyAll) para sincronizar a equipa.
+É basicamente uma corrida
+quem carrega primeiro ganha mais
 
-Temporizador
-Cada pergunta tem um limite de tempo (ex: 30 segundos).
+👥 Rondas de Equipa
 
-Se o tempo acabar, a ronda termina e quem não respondeu não pontua.
+Todos os membros da equipa devem responder
+
+A pontuação só é atribuída quando todos tiverem submetido resposta
+
+Regras de Pontuação
+
+Todos acertam
+→ pontuação a dobrar para a equipa
+
+Apenas alguns acertam
+→ pontuação normal
+
+Implementação Concorrente
+
+Utiliza barreiras baseadas em wait() e notifyAll()
+
+Garante que a equipa avança em conjunto
+ou ninguém avança
+
+Aqui ninguém fica para trás
+ou ganham todos
+ou ninguém se arma em herói
+
+⏱️ Temporizador
+
+Cada pergunta tem um limite de tempo
+por exemplo 30 segundos
+
+Quando o tempo termina:
+
+A ronda é encerrada
+
+Jogadores que não responderam
+não recebem pontos
+
+O relógio não perdoa
 
 📂 Estrutura do Projeto
-KahootServer: Classe principal do servidor. Gere o ServerSocket e a TUI.
+🖥️ Servidor
 
-KahootClient: Classe principal do cliente. Trata da rede e inicia a GUI.
+KahootServer
+Classe principal do servidor
+Gere o ServerSocket e a interface de texto (TUI)
 
-KahootClientGUI: Interface gráfica (Swing) para o jogador.
+DealWithClient
+Thread do servidor responsável por um único jogador
+Gere a comunicação cliente servidor
 
-GameState: O "cérebro" do jogo. Gere a lógica, pontuações e fluxo das rondas.
+GameState
+O cérebro do sistema
+Controla o estado do jogo
+perguntas
+rondas
+pontuações
+sincronização
 
-DealWithClient: Thread no servidor que gere a ligação com um único jogador.
+🧰 Concorrência e Sincronização
 
-ModifiedCountdownLatch: Ferramenta de sincronização customizada para rondas individuais.
+ModifiedCountdownLatch
+Versão adaptada de um CountdownLatch
+Utilizada nas rondas individuais
+para controlar rapidez e término da ronda
 
-TeamBarrier: Ferramenta de sincronização para rondas de equipa.
+TeamBarrier
+Barreira de sincronização para rondas de equipa
+Garante que todos os membros respondem antes de continuar
 
-Messages (Package): Classes de mensagens (AnswerMessage, QuestionMessage, etc.) para comunicação.
+💻 Cliente
+
+KahootClient
+Classe principal do cliente
+Gere a ligação ao servidor
+
+KahootClientGUI
+Interface gráfica desenvolvida em Swing
+Permite ao jogador responder às perguntas
+
+📩 Comunicação
+
+Messages (Package)
+Conjunto de classes de mensagens
+Exemplo
+QuestionMessage
+AnswerMessage
+utilizadas para a comunicação entre cliente e servidor
