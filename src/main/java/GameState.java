@@ -259,7 +259,7 @@ public class GameState implements Runnable {
     private synchronized void endGame() {
         if (status == GameStatus.FINISHED) return;
         status = GameStatus.FINISHED;
-        isRoundOver = true; // Impede 'endRound' de correr
+        isRoundOver = true; // Impede endRound de correr
 
         System.out.println("Jogo " + gameCode + " terminado.");
         broadcastMessage(new StatusMessage(true, "FIM DO JOGO!\n" + getScoreboard()));
