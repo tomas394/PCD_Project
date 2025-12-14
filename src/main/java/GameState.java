@@ -245,7 +245,7 @@ public class GameState implements Runnable {
             System.out.println("Equipa " + team.getTeamName() + " recebe bónus MÁXIMO!");
             team.addScore(questionPoints * 2);
         } else if (correctAnswers > 0) {
-            // "Caso algum falhe, apenas será considerada a melhor pontuação de entre eles"
+            // Caso algum falhe, apenas será considerada a melhor pontuação de entre eles
             // Isto equivale à pontuação base da pergunta, se pelo menos um acertou.
             System.out.println("Equipa " + team.getTeamName() + " recebe pontuação base.");
             team.addScore(questionPoints);
