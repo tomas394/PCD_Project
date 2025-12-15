@@ -73,7 +73,7 @@ public class KahootServer {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Novo cliente ligado de: " + clientSocket.getInetAddress());
 
-                // Cria uma nova thread 'DealWithClient' para este cliente
+                // Cria uma nova thread DealWithClient para este cliente
                 DealWithClient clientHandler = new DealWithClient(clientSocket, this);
                 new Thread(clientHandler).start();
             }

@@ -1,6 +1,5 @@
-# 🧠 IsKahoot - Projeto de Programação Concorrente e Distribuida
+# IsKahoot - Projeto de Programação Concorrente e Distribuida
 
-O **IsKahoot** é um jogo de perguntas e respostas multijogador inspirado no Kahoot, desenvolvido em **Java** com arquitetura **Cliente-Servidor** e um forte foco em **programação concorrente**.
 
 
 
