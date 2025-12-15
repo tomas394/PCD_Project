@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class KahootServer {
 
     private static final int DEFAULT_PORT = 8080;
-
     private final Map<String, GameState> activeGames = new HashMap<>();
-
-    // Todas as perguntas carregadas do JSON
     private final List<Question> allQuestions;
+
+    private final ExecutorService gamePool = Executors.newFixedThreadPool(5); // Pool de threads para jogos concorrentes limitados a 5
 
     public KahootServer(List<Question> allQuestions) {
         this.allQuestions = allQuestions;
@@ -85,7 +86,8 @@ public class KahootServer {
     public synchronized void createGame(int numTeams, int numPlayersPerTeam, int numQuestions) { //cria um novo jogo e adiciona-o ao mapa de jogos ativos
         String gameCode = "Game" + activeGames.size(); 
 
-        GameState newGame = new GameState(gameCode, numTeams, numPlayersPerTeam, numQuestions, allQuestions);
+        // gamePool para o novo jogo
+        GameState newGame = new GameState(gameCode, numTeams, numPlayersPerTeam, numQuestions, allQuestions, gamePool);
 
         activeGames.put(gameCode, newGame);
 

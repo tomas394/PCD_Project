@@ -114,7 +114,7 @@ public class KahootClient {
         if (message instanceof QuestionMessage) {
             QuestionMessage qm = (QuestionMessage) message;
             SwingUtilities.invokeLater(() -> {
-                gui.atualizarPergunta(qm.getQuestionText(), qm.getOptions(), qm.getTimeLimit());
+                gui.atualizarPergunta(qm.getQuestionText(), qm.getOptions(), qm.getTimeLimit(), qm.isTeamRound());
             });
 
         } else if (message instanceof ScoreboardMessage) {

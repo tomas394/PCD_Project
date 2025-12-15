@@ -20,6 +20,8 @@ public class KahootClientGUI extends JFrame {
     private JTextArea areaResultados;
     private JLabel labelEspera;
     private KahootClient client;
+    private JLabel teamRoundLabel; // Label para indicar ronda de equipa
+
 
     private Timer swingTimer; // O temporizador do Swing
     private int tempoRestante; // contador
@@ -43,7 +45,7 @@ public class KahootClientGUI extends JFrame {
     }
 
   
-    public void atualizarPergunta(String pergunta, List<String> opcoes, int tempo) {
+    public void atualizarPergunta(String pergunta, List<String> opcoes, int tempo, boolean isTeamRound) {
         // 1. Atualiza a pergunta e opções de resposta
         labelPergunta.setText("<html><div style='text-align: center;'>" + pergunta + "</div></html>");
         for (int i = 0; i < 4; i++) {
@@ -56,6 +58,8 @@ public class KahootClientGUI extends JFrame {
             }
         }
 
+        // Mostra ou esconde a label de ronda de equipa
+        teamRoundLabel.setVisible(isTeamRound);
 
 
         // 2. Para qualquer temporizador antigo que possa estar a correr
@@ -104,12 +108,25 @@ public class KahootClientGUI extends JFrame {
     private JPanel criarPainelPergunta() {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Painel Norte com Timer e Label de Ronda de Equipa
+        JPanel northPanel = new JPanel(new BorderLayout());
         labelTimer = new JLabel("Tempo: 30", SwingConstants.CENTER);
         labelTimer.setFont(new Font("Arial", Font.BOLD, 20));
-        painel.add(labelTimer, BorderLayout.NORTH);
+        northPanel.add(labelTimer, BorderLayout.NORTH);
+
+        teamRoundLabel = new JLabel("Ronda de Equipa", SwingConstants.CENTER);
+        teamRoundLabel.setFont(new Font("Arial", Font.ITALIC, 18));
+        teamRoundLabel.setForeground(Color.BLUE);
+        teamRoundLabel.setVisible(false); // Inicialmente escondido
+        northPanel.add(teamRoundLabel, BorderLayout.CENTER);
+
+        painel.add(northPanel, BorderLayout.NORTH);
+
         labelPergunta = new JLabel("Aqui vai aparecer a pergunta...", SwingConstants.CENTER);
         labelPergunta.setFont(new Font("Arial", Font.PLAIN, 28));
         painel.add(labelPergunta, BorderLayout.CENTER);
+
         JPanel painelBotoes = new JPanel(new GridLayout(2, 2, 10, 10));
         for (int i = 0; i < 4; i++) {
             botoesResposta[i] = new JButton("Opção " + (i + 1));

@@ -136,9 +136,9 @@ O jogo alterna entre dois tipos de rondas: **Rondas Individuais** e **Rondas de 
 ## 📂 Estrutura do Projeto
 
 ### 🖥️ Servidor
-- **KahootServer**: Classe principal do servidor. Gere o ServerSocket e a interface de texto (TUI)
-- **DealWithClient**: Thread do servidor responsável por um único jogador. Gere a comunicação cliente-servidor
-- **GameState**: O cérebro do sistema. Controla o estado do jogo, perguntas, rondas, pontuações e sincronização
+- **KahootServer**: Classe principal do servidor. Gere o ServerSocket, a interface de texto (TUI) e uma **ThreadPool** para controlar o número de jogos concorrentes. Esta `ThreadPool` limita a execução a 5 jogos simultâneos para garantir a estabilidade do sistema.
+- **DealWithClient**: Thread do servidor responsável por um único jogador. Gere a comunicação cliente-servidor.
+- **GameState**: O cérebro do sistema. Representa um jogo e é executado como uma tarefa (`Runnable`) na `ThreadPool` do servidor. Controla o estado do jogo, perguntas, rondas, pontuações e sincronização.
 
 ### 🧰 Concorrência e Sincronização
 - **ModifiedCountdownLatch**: Versão adaptada de um CountdownLatch. Utilizada nas rondas individuais para controlar rapidez e término da ronda

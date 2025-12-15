@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.ExecutorService;
 
 public class GameState implements Runnable {
 
@@ -29,33 +29,41 @@ public class GameState implements Runnable {
     private final Map<String, Integer> roundAnswers = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, Integer> roundBonus = Collections.synchronizedMap(new HashMap<>());
 
+    // Referência para a pool recebida do servidor
+    private final ExecutorService gamePool;
+
     private enum GameStatus {
-        WAITING_FOR_PLAYERS,
-        IN_PROGRESS,
-        FINISHED
+        WAITING_FOR_PLAYERS, IN_PROGRESS, FINISHED
     }
 
-    public GameState(String gameCode, int maxTeams, int playersPerTeam, int numQuestions, List<Question> allQuestions) { //Construtor
+    public GameState(String gameCode, int maxTeams, int playersPerTeam, int numQuestions, List<Question> allQuestions, ExecutorService gamePool) {
         this.gameCode = gameCode;
         this.maxTeams = maxTeams;
         this.playersPerTeam = playersPerTeam;
         this.numQuestions = numQuestions;
         this.allQuestions = allQuestions;
+        this.gamePool = gamePool; // Guardamos a pool
         this.status = GameStatus.WAITING_FOR_PLAYERS;
     }
 
-    public synchronized boolean addPlayer(Player newPlayer, String teamName) { //Adiciona jogador á respetiva equipa
+    public synchronized boolean addPlayer(Player newPlayer, String teamName) {
         if (status != GameStatus.WAITING_FOR_PLAYERS) return false;
+        
         players.add(newPlayer);
-        Team team = teams.computeIfAbsent(teamName, k -> new Team(k, playersPerTeam)); // Cria a equipa se não existir
-        if (!team.addPlayer(newPlayer)) { // Verifica se a equipa está cheia
+        Team team = teams.computeIfAbsent(teamName, k -> new Team(k, playersPerTeam));
+        
+        if (!team.addPlayer(newPlayer)) {
             players.remove(newPlayer);
             return false;
         }
+        
         totalPlayersReady++;
         System.out.println("Jogador " + newPlayer.getUsername() + " entrou. (" + totalPlayersReady + "/" + (maxTeams * playersPerTeam) + ")");
+        
         if (totalPlayersReady == (maxTeams * playersPerTeam)) {
-            new Thread(this).start(); // Inicia o jogo quando todos os jogadores estiverem prontos
+            // [ALTERADO] Em vez de criar Thread nova, submetemos à pool
+            System.out.println("Jogo cheio! A colocar na fila de execução (ThreadPool)...");
+            gamePool.submit(this);
         }
         return true;
     }
@@ -123,7 +131,8 @@ public class GameState implements Runnable {
         QuestionMessage qm = new QuestionMessage(
                 currentQuestion.getQuestion(),
                 currentQuestion.getOptions(),
-                roundTime
+                roundTime,
+                !isRoundIndividual
         );
         broadcastMessage(qm);
     }
@@ -276,12 +285,12 @@ public class GameState implements Runnable {
     }
 
     public synchronized String getScoreboard() {
-        StringBuilder sb = new StringBuilder("--- PLACAR ---\n");
+        StringBuilder sb = new StringBuilder("--- PLACAR ---\n\n");
         for (Team team : teams.values()) {
             sb.append(team.getTeamName())
                     .append(": ")
                     .append(team.getTotalScore())
-                    .append(" pts\n");
+                    .append(" pts\n\n");
         }
         return sb.toString();
     }
